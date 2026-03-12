@@ -22,4 +22,4 @@ RUN GGUF=$(find /models -name "*.gguf" | head -1) && \
 EXPOSE 8080
 
 ENTRYPOINT ["llama-server"]
-CMD ["--model", "/models/model.gguf", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["--model", "/models/model.gguf", "--host", "0.0.0.0", "--port", "8080", "--n-gpu-layers", "99"]
