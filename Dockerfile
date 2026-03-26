@@ -7,7 +7,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Download the Q4_K_M quantized GGUF at build time so it's baked into the image
-ARG HF_REPO=HauhauCS/Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive
+ARG HF_REPO=HauhauCS/Qwen3.5-9B-Uncensored-HauhauCS-Aggressive
 ARG HF_QUANT=Q4_K_M
 RUN mkdir -p /models && \
     python3 -c "from huggingface_hub import snapshot_download; snapshot_download('${HF_REPO}', allow_patterns=['*${HF_QUANT}*', '*mmproj*'], local_dir='/models')"
@@ -20,6 +20,9 @@ RUN GGUF=$(find /models -name "*.gguf" ! -name "*mmproj*" | head -1) && \
     echo "Model downloaded: ${GGUF}" && \
     echo "Vision encoder downloaded: ${MMPROJ}"
 
+# Enable CUDA Unified Memory (allows VRAM overflow to system RAM)
+ENV GGML_CUDA_ENABLE_UNIFIED_MEMORY=1
+
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/sh", "-c", "/app/llama-server --model $(cat /models/.model_path) --mmproj $(cat /models/.mmproj_path) --alias openai/singularity --host 0.0.0.0 --port 8080 --n-gpu-layers 99"]
+ENTRYPOINT ["/bin/sh", "-c", "/app/llama-server --model $(cat /models/.model_path) --mmproj $(cat /models/.mmproj_path) --alias openai/singularity --host 0.0.0.0 --port 8080 --n-gpu-layers 99 --ctx-size 131072"]
