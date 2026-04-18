@@ -23,4 +23,4 @@ RUN GGUF=$(find /models -name "*.gguf" ! -name "mmproj-*" | head -1) && \
 
 EXPOSE 8080
 
-ENTRYPOINT ["/bin/sh", "-c", "/app/llama-server --model $(cat /models/.model_path) --mmproj $(cat /models/.mmproj_path) --alias openai/singularity --host 0.0.0.0 --port 8080 --n-gpu-layers 99 --image-min-tokens 1024 --jinja --reasoning-budget 0"]
+ENTRYPOINT ["/bin/sh", "-c", "/app/llama-server --model $(cat /models/.model_path) --mmproj $(cat /models/.mmproj_path) --alias openai/singularity --host 0.0.0.0 --port 8080 --n-gpu-layers 99 --image-min-tokens 1024 --jinja --reasoning-budget 2048 --ctx-size 260000 --temp 0.1 --top-p 0.9"]
