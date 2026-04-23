@@ -1,8 +1,10 @@
 # ot-llama
 
-Dockerized [llama.cpp](https://github.com/ggerganov/llama.cpp) server with a preloaded model.
+Dockerized [llama.cpp](https://github.com/ggerganov/llama.cpp) server.
 
-**Default model:** `HauhauCS/Qwen3.5-4B-Uncensored-HauhauCS-Aggressive` (Q4_K_M quantization)
+**Default model:** `HauhauCS/Qwen3.6-27B-Uncensored-HauhauCS-Aggressive` (IQ4_XS quantization)
+
+The model is **not** baked into the image — it's downloaded on first run into a named Docker volume (`models`) so subsequent starts reuse the cached files.
 
 ## Prerequisites
 
@@ -12,10 +14,11 @@ Dockerized [llama.cpp](https://github.com/ggerganov/llama.cpp) server with a pre
 ## Quick Start
 
 ```bash
-# Build the image (downloads the model during build — ~2-3 GB)
+# Build the image (small — no model included)
 docker compose build
 
-# Start the server (GPU-accelerated by default)
+# Start the server. First run downloads the model into the `models` volume;
+# later runs reuse it.
 docker compose up
 ```
 
@@ -62,13 +65,21 @@ docker run -p 8080:8080 ot-llama-llama \
   --n-gpu-layers 0
 ```
 
-### Using a different model at build time
+### Using a different model
 
-You can swap the model by passing build args:
+Set `HF_REPO` and `HF_QUANT` as environment variables on the container. The download happens on first start (if `/models` is empty), so clear the volume when switching models:
 
 ```bash
-docker build \
-  --build-arg HF_REPO=TheBloke/Mistral-7B-Instruct-v0.2-GGUF \
-  --build-arg HF_QUANT=Q4_K_M \
-  -t ot-llama-custom .
+docker compose down -v           # removes the `models` volume
+HF_REPO=TheBloke/Mistral-7B-Instruct-v0.2-GGUF HF_QUANT=Q4_K_M docker compose up
+```
+
+Or with plain `docker run`, mount your own directory and pass the env vars:
+
+```bash
+docker run -p 8080:8080 \
+  -v $(pwd)/models:/models \
+  -e HF_REPO=TheBloke/Mistral-7B-Instruct-v0.2-GGUF \
+  -e HF_QUANT=Q4_K_M \
+  ot-llama-llama
 ```

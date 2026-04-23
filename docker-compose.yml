@@ -4,6 +4,8 @@ services:
     ports:
       - "8081:8080"
     restart: unless-stopped
+    volumes:
+      - models:/models
     deploy:
       resources:
         reservations:
@@ -14,6 +16,9 @@ services:
     networks:
       - default
       - llm
+
+volumes:
+  models:
 
 networks:
   llm:
