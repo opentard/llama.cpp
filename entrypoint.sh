@@ -28,7 +28,10 @@ set -- --model "$GGUF" \
     --image-min-tokens 1024 \
     --jinja \
     --reasoning-budget 2048 \
-    --ctx-size 131072 \
+    --ctx-size 262144 \
+    --parallel 1 \
+    --cache-type-k q8_0 \
+    --cache-type-v q8_0 \
     --temp 0.1 \
     --top-p 0.9 \
     "$@"
