@@ -30,8 +30,9 @@ set -- --model "$GGUF" \
     --reasoning-budget 2048 \
     --ctx-size 262144 \
     --parallel 1 \
-    --cache-type-k q8_0 \
-    --cache-type-v q8_0 \
+    --cache-type-k q5_1 \
+    --cache-type-v q5_1 \
+    --flash-attn on \
     --temp 0.1 \
     --top-p 0.9 \
     "$@"
