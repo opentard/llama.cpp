@@ -1,11 +1,35 @@
 services:
+  # Service name kept as "llama" so dependents on the external "llm" network
+  # keep resolving the same hostname, even though it now runs vLLM.
   llama:
-    build: .
+    image: vllm/vllm-openai:v0.22.0
+    # vllm-openai's default entrypoint varies by version; pin it so the model id
+    # is passed as the positional arg to `vllm serve`.
+    entrypoint: ["vllm", "serve"]
+    command:
+      - sakamakismile/Huihui-Qwen3.6-27B-abliterated-NVFP4-MTP
+      - --served-model-name=openai/singularity
+      - --trust-remote-code
+      - --tensor-parallel-size=1
+      - --quantization=modelopt          # NVFP4 (W4A4) weights for Blackwell FP4 cores
+      - --kv-cache-dtype=fp8
+      - --dtype=auto
+      - --max-model-len=32768            # conservative first boot; raise once VRAM headroom is confirmed
+      - --max-num-seqs=4
+      - --gpu-memory-utilization=0.90
+      - --reasoning-parser=qwen3
+      - --speculative-config={"method":"qwen3_5_mtp","num_speculative_tokens":3}  # MTP speculative decoding
+      - --host=0.0.0.0
+      - --port=8000
     ports:
-      - "8081:8080"
+      - "8081:8000"
     restart: unless-stopped
+    ipc: host                            # vLLM needs large shared memory for NCCL/worker IPC
+    environment:
+      - HF_HOME=/data                    # persist model downloads in the volume
+      - VLLM_USE_FLASHINFER_SAMPLER=1
     volumes:
-      - models:/models
+      - models:/data
     deploy:
       resources:
         reservations:
