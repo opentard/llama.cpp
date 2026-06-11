@@ -5,18 +5,21 @@ set -e
 : "${HF_QUANT:=IQ4_XS}"
 : "${MODELS_DIR:=/models}"
 
-mkdir -p "$MODELS_DIR"
+# Cache each model in its own subdir keyed by repo + quant, so switching models
+# reuses an existing download instead of re-fetching.
+MODEL_DIR="${MODELS_DIR}/$(printf '%s_%s' "$HF_REPO" "$HF_QUANT" | tr '/' '_')"
+mkdir -p "$MODEL_DIR"
 
-if ! find "$MODELS_DIR" -maxdepth 3 -name "*.gguf" -print -quit | grep -q .; then
-    echo "No GGUF found in ${MODELS_DIR}. Downloading ${HF_REPO} (${HF_QUANT})..."
-    python3 -c "from huggingface_hub import snapshot_download; snapshot_download('${HF_REPO}', allow_patterns=['*${HF_QUANT}*', '*mmproj*'], local_dir='${MODELS_DIR}')"
+if ! find "$MODEL_DIR" -name "*.gguf" -print -quit | grep -q .; then
+    echo "No GGUF found in ${MODEL_DIR}. Downloading ${HF_REPO} (${HF_QUANT})..."
+    python3 -c "from huggingface_hub import snapshot_download; snapshot_download('${HF_REPO}', allow_patterns=['*${HF_QUANT}*', '*mmproj*'], local_dir='${MODEL_DIR}')"
 fi
 
-GGUF=$(find "$MODELS_DIR" -name "*.gguf" ! -name "mmproj-*" | head -1)
-MMPROJ=$(find "$MODELS_DIR" -name "mmproj-*.gguf" | head -1)
+GGUF=$(find "$MODEL_DIR" -name "*.gguf" ! -name "mmproj-*" | head -1)
+MMPROJ=$(find "$MODEL_DIR" -name "mmproj-*.gguf" | head -1)
 
 if [ -z "$GGUF" ]; then
-    echo "ERROR: no GGUF found in ${MODELS_DIR} after download" >&2
+    echo "ERROR: no GGUF found in ${MODEL_DIR} after download" >&2
     exit 1
 fi
 
