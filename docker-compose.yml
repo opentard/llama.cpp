@@ -14,8 +14,8 @@ services:
       - --quantization=modelopt          # NVFP4 (W4A4) weights for Blackwell FP4 cores
       - --kv-cache-dtype=fp8
       - --dtype=auto
-      - --max-model-len=32768            # conservative first boot; raise once VRAM headroom is confirmed
-      - --max-num-seqs=4
+      - --max-model-len=131072           # 128k; KV is cheap (only 16 attention layers, fp8 cache)
+      - --max-num-seqs=1                 # single-user: serve requests fully serially
       - --gpu-memory-utilization=0.90
       - --reasoning-parser=qwen3
       - --speculative-config={"method":"qwen3_5_mtp","num_speculative_tokens":3}  # MTP speculative decoding
