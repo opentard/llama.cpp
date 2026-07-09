@@ -1,0 +1,112 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260327221142
+Username: DESKTOP-0PCP1RS\albert
+RunAs User: DESKTOP-0PCP1RS\albert
+Configuration Name: 
+Machine: DESKTOP-0PCP1RS (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File C:/ot/llama.cpp/optimize-for-llm.ps1
+Process ID: 17440
+PSVersion: 5.1.26100.7920
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.7920
+BuildVersion: 10.0.26100.7920
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\ot\llama.cpp\optimize-log.txt
+=== LLM Server Optimization ===
+
+[1/8] Setting Ultimate Performance power plan...
+Power Scheme GUID: ec58df47-75e7-410c-bcfc-21bf132a040a  (Ultimate Performance)
+Power Scheme GUID: ec58df47-75e7-410c-bcfc-21bf132a040a  (Ultimate Performance)
+  Activated High Performance plan (Ultimate not available)
+
+
+
+
+
+[2/8] Disabling unnecessary services...
+  Disabled: Print Spooler
+  Disabled: Windows Search
+  Disabled: SysMain
+  Disabled: Windows Audio
+  Disabled: Windows Audio Endpoint Builder
+  Disabled: Nahimic service
+  Disabled: WLAN AutoConfig
+  Disabled: Windows Mobile Hotspot Service
+  Disabled: Geolocation Service
+  Disabled: SSDP Discovery
+  Disabled: Internet Connection Sharing (ICS)
+  Disabled: Radio Management Service
+  Disabled: Windows Push Notifications System Service
+  Disabled: Windows Push Notifications User Service_101f40
+  Disabled: Connected User Experiences and Telemetry
+  Disabled: Device Management Wireless Application Protocol (WAP) Push message Routing Service
+  Disabled: Downloaded Maps Manager
+  Disabled: Windows Insider Service
+  Disabled: Windows Error Reporting Service
+  Disabled: Thunderbolt(TM) Application Launcher
+  Disabled: Thunderbolt(TM) Peer to Peer Shortcut
+  Disabled: KillerSmartphoneSleepService
+  Disabled: Killer Dynamic Bandwidth Management
+  Disabled: Killer Analytics Service
+  Disabled: Sync Host_101f40
+  Disabled: Delivery Optimization
+  Disabled: Themes
+
+[3/8] Disabling Windows Defender real-time monitoring...
+  Added exclusions and reduced scan CPU load
+  NOTE: To fully disable Defender, use Group Policy or Windows Security UI
+
+[4/8] WSL2: no limits applied (per user preference)
+
+[5/8] Disabling visual effects...
+  Visual effects minimized
+
+[6/8] Disabling startup programs...
+  Removed startup: OneDrive
+  Removed startup: SecurityHealth
+
+[7/8] Applying NVIDIA optimizations...
+Setting persistence mode is not supported for GPU 00000000:01:00.0 on this platform.
+Treating as warning and moving on.
+All done.
+Changing power management limit is not supported in current scope for GPU: 00000000:01:00.0.
+All done.
+The requested functionality has been deprecated.
+All done.
+ECC features not supported for GPU 00000000:01:00.0.
+Treating as warning and moving on.
+All done.
+  GPU set to max performance mode
+
+[8/8] Applying memory optimizations...
+  Page file will be removed on next reboot
+  Priority set to favor background services
+
+=== DONE ===
+
+Actions completed. Manual steps remaining:
+
+1. BIOS: Enable XMP/EXPO profile to run RAM at 5600MHz (currently 3600MHz)
+   - Reboot > Enter BIOS (DEL key) > OC settings > Enable XMP Profile
+   - This alone is a ~55% memory bandwidth improvement
+
+2. Reboot to apply: page file removal, visual effects, startup changes
+
+3. After reboot, restart Docker and the container:
+   wsl --shutdown
+   docker compose up -d
+
+4. Optional - fully disable Defender via Group Policy:
+   gpedit.msc > Computer Config > Admin Templates > Windows Components
+   > Microsoft Defender Antivirus > Turn off Microsoft Defender Antivirus = Enabled
+PS>$global:?
+True
+**********************
+Windows PowerShell transcript end
+End time: 20260327221200
+**********************
