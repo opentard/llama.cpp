@@ -22,7 +22,7 @@ docker compose build
 docker compose up
 ```
 
-The server is now available at **http://localhost:8080** with:
+The server is now available at **http://localhost:8081** (mapped to the container's port 8080) with:
 - Web UI at the root URL
 - OpenAI-compatible API at `/v1/chat/completions`, `/v1/completions`, etc.
 

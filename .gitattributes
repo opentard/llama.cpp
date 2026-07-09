@@ -1,0 +1,4 @@
+# Shell scripts run inside the Linux container — force LF so the shebang works
+# even when checked out on Windows (core.autocrlf=true would otherwise use CRLF).
+*.sh text eol=lf
+entrypoint.sh text eol=lf
